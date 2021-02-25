@@ -3,12 +3,11 @@ import { Link } from "react-router-dom";
 import { IThemeOptions } from "./Theme";
 import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
 import {
+  Typography,
   AppBar,
   Toolbar,
   useScrollTrigger,
   Button,
-  Tabs,
-  Tab,
   Grid,
   TextField,
   IconButton,
@@ -24,7 +23,13 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import MenuIcon from "@material-ui/icons/Menu";
 
-import logo from "../../assets/logo.png";
+import logo from "../assets/logo.png";
+
+enum buttonTag {
+  "contained",
+  "outlined",
+  "text",
+}
 
 interface Props {
   window?: () => Window;
@@ -51,11 +56,20 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
       marginLeft: "2em",
     },
     logo: {
-      maxHeight: "5em",
+      maxHeight: "3em",
     },
-    tab: {
+    headerTab: {
+      maxWidth: "7em",
+      paddingLeft: 2,
+      paddingRight: 2,
+      "& button": { margin: "auto" },
+    },
+
+    list: {
+      display: "flex",
+      color: theme.palette.common.white,
       width: "100%",
-      marginLeft: "2em",
+      marginLeft: "1em",
       marginRight: "1em",
       [theme.breakpoints.down("md")]: { marginLeft: 0 },
     },
@@ -63,7 +77,7 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
       display: "block",
       width: "100%",
     },
-    search: { width: "100%" },
+    search: { width: "100%", height: "2.5em" },
     menu: {
       marginLeft: 12,
       fontSize: 40,
@@ -76,6 +90,14 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
     },
     drawItem: {
       color: theme.palette.common.white,
+    },
+    headerText: {
+      color: theme.palette.common.white,
+      margin: "auto",
+      fontSize: 11,
+    },
+    active: {
+      backgroundColor: theme.palette.common.green,
     },
   })
 );
@@ -128,75 +150,187 @@ export default function Header(props: Props) {
     }
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
-
   const tabs = (
-    <Tabs
-      value={value}
-      onChange={handleChange}
-      className={classes.tab}
-      aria-label="tabs"
-      indicatorColor={
-        matchesSM && value >= 0 && value <= 3 ? "primary" : "secondary"
-      }
-      centered={matchesSM ? false : true}
-    >
+    <List disablePadding className={classes.list}>
       {matchesSM ? null : (
-        <Tab label="Trang Chủ" component={Link} to="/" value={0} />
+        <ListItem
+          className={classes.headerTab}
+          component={Link}
+          to="/"
+          selected={value === 0}
+          onClick={() => setValue(0)}
+          classes={{ selected: classes.active }}
+        >
+          <Button
+            // @ts-ignore
+            variant={value === 0 ? "contained" : "text"}
+            color="secondary"
+          >
+            <Typography
+              variant="button"
+              align="center"
+              className={classes.headerText}
+            >
+              Trang Chủ
+            </Typography>
+          </Button>
+        </ListItem>
       )}
       {matchesSM ? null : (
-        <Tab label="Sản Phẩm" component={Link} to="/products" value={1} />
+        <ListItem
+          className={classes.headerTab}
+          component={Link}
+          to="/products"
+          selected={value === 1}
+          onClick={() => setValue(1)}
+        >
+          <Button
+            // @ts-ignore
+            variant={value === 1 ? "contained" : "text"}
+            color="secondary"
+          >
+            <Typography
+              variant="button"
+              align="center"
+              className={classes.headerText}
+            >
+              Sản Phẩm
+            </Typography>
+          </Button>
+        </ListItem>
       )}
       {matchesSM ? null : (
-        <Tab
-          label="Thêm sản Phẩm"
+        <ListItem
+          className={classes.headerTab}
           component={Link}
           to="/admin/products"
-          value={2}
-        />
+          selected={value === 2}
+          onClick={() => setValue(2)}
+        >
+          <Button
+            // @ts-ignore
+            variant={value === 2 ? "contained" : "text"}
+            color="secondary"
+          >
+            <Typography
+              variant="button"
+              align="center"
+              className={classes.headerText}
+            >
+              Chỉnh Sửa
+            </Typography>
+          </Button>
+        </ListItem>
       )}
       {matchesSM ? null : (
-        <Tab label="Thống Kê" component={Link} to="/admin" value={3} />
+        <ListItem
+          className={classes.headerTab}
+          component={Link}
+          to="/admin"
+          selected={value === 3}
+          onClick={() => setValue(3)}
+        >
+          <Button
+            // @ts-ignore
+            variant={value === 3 ? "contained" : "text"}
+            color="secondary"
+          >
+            <Typography
+              variant="button"
+              align="center"
+              className={classes.headerText}
+            >
+              Thống kê
+            </Typography>
+          </Button>
+        </ListItem>
       )}
       {matchesXS ? null : (
-        <Paper
-          style={{
-            width: "100%",
-            marginLeft: 10,
-            marginRight: 10,
-          }}
-        >
-          <TextField
-            autoFocus={false}
-            placeholder="Tìm kiếm sản phẩm..."
-            className={classes.search}
-            variant="filled"
-            // value={search}
-            // onChange={handleSearch}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end" style={{ cursor: "pointer" }}>
-                  <IconButton>
-                    <SearchIcon color="primary" style={{ fontSize: 40 }} />
-                  </IconButton>
-                </InputAdornment>
-              ),
+        <ListItem>
+          <Paper
+            style={{
+              width: "100%",
+              marginLeft: 10,
+              marginRight: 10,
             }}
-          />
-        </Paper>
+          >
+            <TextField
+              autoFocus={false}
+              placeholder="Tìm kiếm sản phẩm..."
+              className={classes.search}
+              variant="filled"
+              fullWidth
+              // value={search}
+              // onChange={handleSearch}
+              InputProps={{
+                disableUnderline: true,
+                endAdornment: (
+                  <InputAdornment position="end" style={{ cursor: "pointer" }}>
+                    <IconButton>
+                      <SearchIcon color="primary" style={{ fontSize: 40 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Paper>
+        </ListItem>
       )}
-      <Tab
-        label="Đăng Ký"
+      <ListItem
         component={Link}
         to="/signup"
-        value={4}
+        selected={value === 4}
         style={{ marginLeft: matchesSM ? "auto" : undefined }}
-      />
-      <Tab label="Đăng Nhập" component={Link} to="/signin" value={5} />
-      {false ? <Tab label="Đăng xuất" component={Link} to="/logout" /> : null}
-    </Tabs>
+        onClick={() => setValue(4)}
+        className={classes.headerTab}
+      >
+        <Button
+          // @ts-ignore
+          variant={value === 4 ? "contained" : "text"}
+          color="secondary"
+        >
+          <Typography
+            variant="button"
+            align="center"
+            className={classes.headerText}
+          >
+            Đăng Ký
+          </Typography>
+        </Button>
+      </ListItem>
+      <ListItem
+        component={Link}
+        to="/signin"
+        selected={value === 5}
+        onClick={() => setValue(5)}
+        className={classes.headerTab}
+      >
+        <Button
+          // @ts-ignore
+          variant={value === 5 ? "contained" : "text"}
+          color="secondary"
+        >
+          <Typography
+            variant="button"
+            align="center"
+            className={classes.headerText}
+          >
+            Đăng Nhập
+          </Typography>
+        </Button>
+      </ListItem>
+      {false ? (
+        <ListItem component={Link} to="/logout" className={classes.headerTab}>
+          <Typography
+            variant="button"
+            align="center"
+            className={classes.headerText}
+          >
+            Đăng xuất
+          </Typography>
+        </ListItem>
+      ) : null}
+    </List>
   );
 
   const drawer = (
@@ -223,7 +357,7 @@ export default function Header(props: Props) {
                 endAdornment: (
                   <InputAdornment position="end" style={{ cursor: "pointer" }}>
                     <IconButton>
-                      <SearchIcon color="primary" style={{ fontSize: 40 }} />
+                      <SearchIcon color="primary" style={{ width: 30 }} />
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -317,34 +451,37 @@ export default function Header(props: Props) {
   );
 
   return (
-    <ElevationScroll {...props}>
-      <AppBar position="fixed">
-        <Toolbar color="primary" className={classes.toolBar}>
-          <Hidden mdDown>
-            <Button
-              component={Link}
-              to="/"
-              className={classes.logoContainer}
-              onClick={() => {
-                setValue(0);
-              }}
-              disableRipple
-            >
-              <img alt="company logo" src={logo} className={classes.logo} />
-            </Button>
-          </Hidden>
-          <Hidden mdUp>
-            <IconButton
-              onClick={() => setOpenDrawer((st) => !openDrawer)}
-              disableRipple
-            >
-              <MenuIcon className={classes.menu} />
-            </IconButton>
-          </Hidden>
-          <Grid container>{tabs}</Grid>
-        </Toolbar>
-        {drawer}
-      </AppBar>
-    </ElevationScroll>
+    <>
+      <ElevationScroll {...props}>
+        <AppBar position="fixed">
+          <Toolbar color="primary" className={classes.toolBar}>
+            <Hidden mdDown>
+              <Button
+                component={Link}
+                to="/"
+                className={classes.logoContainer}
+                onClick={() => {
+                  setValue(0);
+                }}
+                disableRipple
+              >
+                <img alt="company logo" src={logo} className={classes.logo} />
+              </Button>
+            </Hidden>
+            <Hidden mdUp>
+              <IconButton
+                onClick={() => setOpenDrawer((st) => !openDrawer)}
+                disableRipple
+              >
+                <MenuIcon className={classes.menu} />
+              </IconButton>
+            </Hidden>
+            <Grid container>{tabs}</Grid>
+          </Toolbar>
+          {drawer}
+        </AppBar>
+      </ElevationScroll>{" "}
+      <div style={{ width: "100%", height: "6em" }} />
+    </>
   );
 }
