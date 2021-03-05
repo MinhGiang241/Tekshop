@@ -9,10 +9,10 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 
 const useStyles = makeStyles((theme: IThemeOptions) => ({
   footer: {
-    position: "absolute",
-    minHeight: "8em",
+    position: "relative",
     width: "100%",
     backgroundColor: theme.palette.common.green,
+    color: theme.palette.common.white,
   },
   socialContainer: {
     position: "absolute",
@@ -22,7 +22,17 @@ const useStyles = makeStyles((theme: IThemeOptions) => ({
     },
   },
   container: {
-    height: "8em",
+    height: 180,
+  },
+  end: {
+    position: "absolute",
+    bottom: 0,
+    height: 30,
+  },
+  linkContainer: {
+    borderBottom: "1px solid white",
+    position: "absolute",
+    bottom: 30,
   },
   iconButton: {
     marginTop: "auto",
@@ -30,7 +40,8 @@ const useStyles = makeStyles((theme: IThemeOptions) => ({
     marginRight: 2,
     marginBottom: 2,
   },
-  icon: { fontSize: 40, color: theme.palette.common.white },
+  footerTitle: { fontWeight: "bold", textDecoration: "underline" },
+  icon: { fontSize: 30, color: theme.palette.common.white },
   text: { color: theme.palette.common.white },
 }));
 
@@ -40,31 +51,80 @@ function Footer() {
 
   return (
     <footer className={classes.footer}>
-      <Toolbar className={classes.container}>
-        <Grid
-          container
-          justify="flex-end"
-          alignItems="flex-end"
-          spacing={2}
-          className={classes.socialContainer}
-          style={{ height: "100%" }}
-        >
-          <Grid item>
-            <Typography variant="body1" className={classes.text}>
-              Liên hệ :
+      <Grid container className={classes.container}>
+        <Grid item container className={classes.linkContainer}>
+          <Grid item lg>
+            <Typography
+              align="center"
+              gutterBottom
+              className={classes.footerTitle}
+            >
+              Thông tin
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Giới thiệu
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Liên hệ
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Đối tác
             </Typography>
           </Grid>
-          <Grid item component="a" href="http://facebook.com" target="_blank">
-            <FacebookIcon className={classes.icon} />
+          <Grid item lg>
+            <Typography
+              align="center"
+              gutterBottom
+              className={classes.footerTitle}
+            >
+              Chính sách
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Chính sách đổi hàng
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Chính sách bảo mật
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Chính sách bảo hành
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Chính sách hoàn tiền
+            </Typography>
           </Grid>
-          <Grid item component="a" href="http://istagram.com" target="_blank">
-            <InstagramIcon className={classes.icon} />
-          </Grid>
-          <Grid item component="a" href="http://twitter.com" target="_blank">
-            <TwitterIcon className={classes.icon} />
+          <Grid item lg>
+            <Typography
+              align="center"
+              gutterBottom
+              className={classes.footerTitle}
+            >
+              Dịch vụ
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Thanh toán
+            </Typography>
+            <Typography align="center" gutterBottom>
+              vận chuyển
+            </Typography>
+            <Typography align="center" gutterBottom>
+              Câu hỏi thường gặp
+            </Typography>
           </Grid>
         </Grid>
-      </Toolbar>
+
+        <Grid item container className={classes.end}>
+          <Grid item>
+            <Typography variant="caption">
+              Copyright © 2017 All Rights Reserved by me.
+            </Typography>
+          </Grid>
+          <Grid item className={classes.socialContainer}>
+            <FacebookIcon />
+            <InstagramIcon />
+            <TwitterIcon />
+          </Grid>
+        </Grid>
+      </Grid>
     </footer>
   );
 }

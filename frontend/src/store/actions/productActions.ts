@@ -12,7 +12,7 @@ import axios from "axios";
 export const listProducts = (page: number) => async (dispatch: any) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST });
-    const { data } = await axios.get(`/products/?page=${page}`);
+    const { data } = await axios.get(`/api/products/?page=${page}`);
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
   } catch (err) {
     dispatch({
@@ -28,7 +28,7 @@ export const listProducts = (page: number) => async (dispatch: any) => {
 export const listProductsDetails = (id: any) => async (dispatch: any) => {
   try {
     dispatch({ type: PRODUCT_DETAILS_REQUEST });
-    const { data } = await axios.get(`/products/${id}`);
+    const { data } = await axios.get(`/api/products/${id}`);
     dispatch({ type: PRODUCT_DETAILS_SUCCESS, payload: data });
   } catch (err) {
     dispatch({

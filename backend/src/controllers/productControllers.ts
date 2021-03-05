@@ -10,8 +10,6 @@ export const getAllProducts = async (
     const page = parseInt(req.query.page as string) || 1;
     const perPage = parseInt(process.env.PER_PAGE as string);
 
-    console.log(page, perPage);
-
     const products = await Product.find()
       .skip((page - 1) * perPage)
       .limit(perPage);
@@ -20,7 +18,7 @@ export const getAllProducts = async (
       const error = new Error("Products not found");
       throw error;
     }
-    const count = await Product.count();
+    const count = await Product.estimatedDocumentCount();
     res.json({ products, count });
   } catch (err: any) {
     if (!err.statusCode) {

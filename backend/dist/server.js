@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const db_1 = __importDefault(require("./config/db"));
 const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const errorControllers_1 = require("./controllers/errorControllers");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -25,7 +26,8 @@ app.use((req, res, next) => {
 app.get("/", (req, res, next) => {
     res.send(`API is running on ${process.env.POST}`);
 });
-app.use("/products", productRoutes_1.default);
+app.use("/api/products", productRoutes_1.default);
+app.use("/api/users", userRoutes_1.default);
 app.use(errorControllers_1.notFound);
 app.use(((err, req, res, next) => {
     console.log(err);

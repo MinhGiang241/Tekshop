@@ -18,7 +18,6 @@ const getAllProducts = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(process.env.PER_PAGE);
-        console.log(page, perPage);
         const products = yield productModels_1.default.find()
             .skip((page - 1) * perPage)
             .limit(perPage);
@@ -27,7 +26,7 @@ const getAllProducts = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             const error = new Error("Products not found");
             throw error;
         }
-        const count = yield productModels_1.default.count();
+        const count = yield productModels_1.default.estimatedDocumentCount();
         res.json({ products, count });
     }
     catch (err) {

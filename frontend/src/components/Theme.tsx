@@ -2,7 +2,9 @@ import { createMuiTheme, ThemeOptions, Theme } from "@material-ui/core/styles";
 import { Palette } from "@material-ui/core/styles/createPalette";
 import { TypographyOptions } from "@material-ui/core/styles/createTypography";
 
-interface ITypography extends TypographyOptions {}
+interface ITypography extends TypographyOptions {
+  body3: any;
+}
 
 interface IPalette extends Palette {
   common: {
@@ -29,6 +31,23 @@ let theme = createMuiTheme({});
 
 export default createMuiTheme({
   overrides: {
+    table: {
+      borderColor: "grey",
+    },
+
+    buttonWrapper: {
+      position: "absolute",
+      height: "100% !important",
+      backgroundColor: "transparent",
+      top: "calc(50% - 70px)",
+      "&:hover": {
+        "& $button": {
+          backgroundColor: "black",
+          filter: "brightness(120%)",
+          opacity: "0.4",
+        },
+      },
+    },
     MuiListItem: {
       divider: {
         borderBottom: `1px solid ${greyColor}`,
@@ -71,14 +90,8 @@ export default createMuiTheme({
       },
     },
     MuiGridList: { root: { width: "100%" } },
-
-    MuiGridListTile: {
-      root: {
-        maxHeight: "400px",
-        maxWidth: "20%",
-      },
-    },
   },
+
   palette: {
     common: {
       green: greenColor,
@@ -92,5 +105,13 @@ export default createMuiTheme({
       main: yellowColor,
     },
   },
-  typography: {},
+  typography: {
+    body3: {
+      fontFamily: "Roboto" || "Helvetica" || "Arial" || "sans-serif",
+      fontWeight: 300,
+      fontSize: "0.6rem",
+      lineHeight: 1.2,
+      letterSpacing: "0.008em",
+    },
+  },
 } as IThemeOptions);

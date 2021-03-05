@@ -81,6 +81,14 @@ const productSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    timeRelease: {
+      type: String,
+      require: true,
+    },
+    battery: {
+      type: String,
+      require: true,
+    },
     reviews: [reviewSchema],
     rating: {
       type: Number,

@@ -6,6 +6,7 @@ import { listProducts } from "../store/actions/productActions";
 import Loading from "../components/Loading";
 import Alert from "@material-ui/lab/Alert";
 import Pagination from "@material-ui/lab/Pagination";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 import {
   Card,
@@ -62,19 +63,26 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
     card: {
       width: 230,
       maxHeight: 400,
-      backgroundColor: theme.palette.common.grey,
+      backgroundColor: theme.palette.common.white,
     },
     cardHeader: { height: "3em" },
     image: { height: "12em", width: "100%" },
-    cardTitle: { fontSize: 14 },
+    cardTitle: { fontSize: 17 },
     cardSubheader: { fontSize: 11 },
     icon: { fontSize: 20 },
+    text: {},
     cardLink: {
       display: "flex",
       maxWidth: 230,
       margin: "auto",
       textDecoration: "none",
-      "&:hover": { border: `5px solid ${theme.palette.common.green}` },
+      "&:hover": {
+        "& $cardSubheader,$cardTitle,$text": { color: "red" },
+        "& $image": {
+          transform: "scale(1.15, 1.15)",
+          transition: "transform 0.3s",
+        },
+      },
     },
     logoContainer: {
       marginBottom: "2em",
@@ -98,6 +106,7 @@ export default function Home(props: any) {
   const dispatch = useDispatch();
 
   const productList = useSelector((state: any) => state.productList);
+  const userInfo = useSelector((state: any) => state.userLogin);
 
   //@ts-ignore
   const { loading = true, error, products } = productList;
@@ -119,8 +128,26 @@ export default function Home(props: any) {
 
   return (
     <Container maxWidth="lg">
+      {matchesMD || (
+        <Grid item container className={classes.logoContainer}>
+          {logos.map((i: any) => (
+            <Grid item lg key={i.brand}>
+              <img src={i.src} alt={i.brand} className={classes.logo} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
       {loading ? (
-        <Loading />
+        <GridList
+          cellHeight={380}
+          cols={matchesXS ? 1 : matchesSM ? 2 : matchesMD ? 3 : 5}
+        >
+          {Array.from(new Array(15)).map((p: any, i: any) => (
+            <GridListTile key={i} style={{ marginBottom: 25 }}>
+              <Skeleton variant="rect" width={230} height={400}></Skeleton>
+            </GridListTile>
+          ))}
+        </GridList>
       ) : error ? (
         // @ts-ignore
         <Alert variant="filled" severity="error">
@@ -128,26 +155,13 @@ export default function Home(props: any) {
         </Alert>
       ) : (
         <Grid container>
-          {matchesMD || (
-            <Grid item container className={classes.logoContainer}>
-              {logos.map((i: any) => (
-                <Grid item lg key={i.brand}>
-                  <img src={i.src} alt={i.brand} className={classes.logo} />
-                </Grid>
-              ))}
-            </Grid>
-          )}
-
           <Grid item container>
             <GridList
-              cellHeight={500}
+              cellHeight={380}
               cols={matchesXS ? 1 : matchesSM ? 2 : matchesMD ? 3 : 5}
             >
               {products.products.map((product: Products) => (
-                <GridListTile
-                  key={product._id}
-                  // style={{ maxWidth: page === totalPage ? 300 : undefined }}
-                >
+                <GridListTile key={product._id}>
                   <Link
                     to={`/product/${product._id}`}
                     className={classes.cardLink}
@@ -174,10 +188,8 @@ export default function Home(props: any) {
                             justify="center"
                             alignItems="center"
                           >
-                            <Typography variant="h6">
-                              {product.price}
-                              {/* @ts-ignore */}
-                              {product.price === "chưa xác định" ? "" : "đ"}
+                            <Typography variant="h6" className={classes.text}>
+                              {product.price}đ
                             </Typography>
                           </Grid>
                         </Grid>

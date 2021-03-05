@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IThemeOptions } from "./Theme";
 import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Typography,
   AppBar,
@@ -19,17 +20,17 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu,
+  MenuItem,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import MenuIcon from "@material-ui/icons/Menu";
-
+import PersonIcon from "@material-ui/icons/Person";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import { USER_LOGOUT } from "../store/constants/userConstants";
 import logo from "../assets/logo.png";
-
-enum buttonTag {
-  "contained",
-  "outlined",
-  "text",
-}
+import { useHistory } from "react-router-dom";
+import Modal from "../components/Modal";
 
 interface Props {
   window?: () => Window;
@@ -99,19 +100,43 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
     active: {
       backgroundColor: theme.palette.common.green,
     },
+    link: {
+      textDecoration: "none",
+      color: "inherit",
+    },
   })
 );
 
-export default function Header(props: Props) {
+export default function Header(props: any) {
   const theme = useTheme();
+  const { value, setValue, history, location } = props;
   const iOS =
     (process as any).browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
   const matchesMD = useMediaQuery(theme.breakpoints.down("md"));
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
   const matchesXS = useMediaQuery(theme.breakpoints.down("xs"));
   const classes = useStyles();
-  const [value, setValue] = useState<number>(0);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const dispatch = useDispatch();
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const userInfo = useSelector((state: any) => state.userLogin.userInfo);
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpenModal = () => {
+    setOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+    setValue(0);
+  };
 
   useEffect(() => {
     switch (window.location.pathname) {
@@ -146,9 +171,10 @@ export default function Header(props: Props) {
         }
         break;
       default:
+        setValue(9);
         break;
     }
-  }, []);
+  }, [value, matchesSM, history]);
 
   const tabs = (
     <List disablePadding className={classes.list}>
@@ -276,60 +302,99 @@ export default function Header(props: Props) {
           </Paper>
         </ListItem>
       )}
-      <ListItem
-        component={Link}
-        to="/signup"
-        selected={value === 4}
-        style={{ marginLeft: matchesSM ? "auto" : undefined }}
-        onClick={() => setValue(4)}
-        className={classes.headerTab}
-      >
-        <Button
-          // @ts-ignore
-          variant={value === 4 ? "contained" : "text"}
-          color="secondary"
+      {userInfo ? (
+        <ListItem
+          className={classes.headerTab}
+          style={{ marginLeft: matchesSM ? "auto" : undefined }}
         >
-          <Typography
-            variant="button"
-            align="center"
-            className={classes.headerText}
+          <IconButton
+            style={{ color: theme.palette.common.white }}
+            onClick={handleClick}
+            aria-controls="profile-menu"
+            aria-haspopup="true"
           >
-            Đăng Ký
-          </Typography>
-        </Button>
-      </ListItem>
-      <ListItem
-        component={Link}
-        to="/signin"
-        selected={value === 5}
-        onClick={() => setValue(5)}
-        className={classes.headerTab}
-      >
-        <Button
-          // @ts-ignore
-          variant={value === 5 ? "contained" : "text"}
-          color="secondary"
-        >
-          <Typography
-            variant="button"
-            align="center"
-            className={classes.headerText}
+            <PersonIcon />
+            <Typography variant="body1">{userInfo.name}</Typography>
+            <ArrowDropDownIcon />
+          </IconButton>
+          <Menu
+            id="profile-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
           >
-            Đăng Nhập
-          </Typography>
-        </Button>
-      </ListItem>
-      {false ? (
-        <ListItem component={Link} to="/logout" className={classes.headerTab}>
-          <Typography
-            variant="button"
-            align="center"
-            className={classes.headerText}
-          >
-            Đăng xuất
-          </Typography>
+            <MenuItem onClick={handleClose}>
+              <Link className={classes.link} to="/profile">
+                Hồ sơ
+              </Link>
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <Link className={classes.link} to="/cart">
+                Giỏ hàng
+              </Link>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                setOpen(true);
+                dispatch({ type: USER_LOGOUT });
+              }}
+            >
+              <Link className={classes.link} to="/">
+                Đăng xuất
+              </Link>
+            </MenuItem>
+          </Menu>
         </ListItem>
-      ) : null}
+      ) : (
+        <>
+          <ListItem
+            component={Link}
+            to="/signup"
+            selected={value === 4}
+            style={{ marginLeft: matchesSM ? "auto" : undefined }}
+            onClick={() => setValue(4)}
+            className={classes.headerTab}
+          >
+            <Button
+              // @ts-ignore
+              variant={value === 4 ? "contained" : "text"}
+              color="secondary"
+            >
+              <Typography
+                variant="button"
+                align="center"
+                className={classes.headerText}
+              >
+                Đăng Ký
+              </Typography>
+            </Button>
+          </ListItem>
+
+          <ListItem
+            component={Link}
+            to={`/signin`}
+            selected={value === 5}
+            onClick={() => setValue(5)}
+            className={classes.headerTab}
+          >
+            <Button
+              // @ts-ignore
+              variant={value === 5 ? "contained" : "text"}
+              color="secondary"
+            >
+              <Typography
+                variant="button"
+                align="center"
+                className={classes.headerText}
+              >
+                Đăng Nhập
+              </Typography>
+            </Button>
+          </ListItem>
+        </>
+      )}
     </List>
   );
 
@@ -480,7 +545,13 @@ export default function Header(props: Props) {
           </Toolbar>
           {drawer}
         </AppBar>
-      </ElevationScroll>{" "}
+      </ElevationScroll>
+      <Modal
+        handleOpenModal={handleOpenModal}
+        handleCloseModal={handleCloseModal}
+        text={"Bạn đã đăng xuất thành công"}
+        open={open}
+      />
       <div style={{ width: "100%", height: "6em" }} />
     </>
   );
