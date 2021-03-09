@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Resizer from "react-image-file-resizer";
 import Modal from "../components/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, RouteChildrenProps } from "react-router-dom";
@@ -16,13 +17,41 @@ import {
   FormHelperText,
   InputAdornment,
   IconButton,
+  Typography,
 } from "@material-ui/core";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import PublishIcon from "@material-ui/icons/Publish";
 
 const useStyles = makeStyles((theme: IThemeOptions) => ({
-  input: { height: 100 },
+  input: { height: "100px" },
   error: { color: "red" },
+  uploadContainer: {
+    zIndex: 0,
+    display: "flex",
+    background: "#00bfff",
+    cursor: "pointer",
+    padding: "10px 0",
+  },
+  uploadLabel: {
+    position: "absolute",
+    right: 0,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#00bfff",
+    cursor: "pointer",
+    color: theme.palette.common.white,
+    width: "100px",
+    height: "50px",
+    transform: "none",
+    textTransform: "uppercase",
+  },
+  upload: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
 }));
 
 const RegisterScreen = ({
@@ -48,6 +77,11 @@ const RegisterScreen = ({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [confirmPasswordHelpText, setConfirmPasswordHelpText] = useState("");
+
+  const [avatar, setAvatar] = useState("");
+
+  const fileField = React.useRef<HTMLInputElement>(null);
+
   const classes = useStyles();
   const dispatch = useDispatch();
   const userRegister = useSelector((state: any) => state.userRegister);
@@ -58,15 +92,67 @@ const RegisterScreen = ({
     setOpen(true);
   };
 
+  const getBase64 = (file: any) => {
+    return new Promise((resolve) => {
+      let fileInfo;
+      let baseURL = "";
+      // Make new FileReader
+      let reader = new FileReader();
+
+      // Convert the file to base64 text
+      reader.readAsDataURL(file);
+
+      // on reader load something...
+      reader.onload = () => {
+        // Make a fileInfo Object
+        console.log("Called", reader);
+        // @ts-ignore
+        baseURL = reader.result;
+        // console.log(baseURL);
+        resolve(baseURL);
+      };
+      // console.log(baseURL);
+      return baseURL;
+    });
+  };
+
+  const resizeFile = (file: any) =>
+    new Promise((resolve) => {
+      Resizer.imageFileResizer(
+        file,
+        200,
+        200,
+        "PNG",
+        100,
+        0,
+        (uri) => {
+          resolve(uri);
+        },
+        "base64"
+      );
+    });
+
   const handleCloseModal = () => {
     setOpen(false);
     setValue(0);
     history.push("/signin");
   };
 
+  const handleChangeFile = async (e: any) => {
+    try {
+      const file = e.target.files[0];
+      const image = (await resizeFile(file)) as string;
+      setAvatar((st: string) => image);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   // @ts-ignore
   useEffect(() => {
     console.log(userInfo);
+    console.log(avatar);
+
     if (userInfo) {
       setNameError(false);
       setEmailError(false);
@@ -115,11 +201,11 @@ const RegisterScreen = ({
       }
     }
     return dispatch({ type: USER_LOGOUT });
-  }, [userInfo, error, dispatch]);
+  }, [userInfo, error, dispatch, avatar]);
 
   const submitHandle = async (e: any) => {
     e.preventDefault();
-    dispatch(register(name, email, password, confirmPassword));
+    dispatch(register(name, email, password, confirmPassword, avatar));
   };
 
   return (
@@ -264,6 +350,55 @@ const RegisterScreen = ({
                 </FormHelperText>
               )}
             </FormControl>
+          </Grid>
+          <Grid
+            item
+            container
+            style={{
+              position: "relative",
+              width: 400,
+              display: "flex",
+              justifyContent: "space-between",
+              height: 100,
+            }}
+          >
+            <Grid
+              item
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                style={{
+                  width: "100%",
+                }}
+                variant="body1"
+                align="left"
+              >
+                Ảnh đại diện
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              style={{ width: 100, display: "flex", alignItems: "center" }}
+            >
+              <FormControl style={{ height: 50 }}>
+                <InputLabel htmlFor="avatar" className={classes.uploadLabel}>
+                  <Typography variant="body1">Upload</Typography>
+                  <PublishIcon />
+                </InputLabel>
+                <Input
+                  className={classes.upload}
+                  id="avatar"
+                  inputProps={{
+                    accept: "image/png, image/jpeg, image/svg",
+                    type: "file",
+                  }}
+                  onChange={handleChangeFile}
+                />
+              </FormControl>
+            </Grid>
           </Grid>
           <Grid item container justify="center">
             <Button

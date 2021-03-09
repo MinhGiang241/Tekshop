@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -18,6 +9,11 @@ const userModels_1 = __importDefault(require("../models/userModels"));
 const userController_1 = require("../controllers/userController");
 const isAuth_1 = __importDefault(require("../middlewares/isAuth"));
 const router = express_1.default.Router();
+router.get("/cart", isAuth_1.default, userController_1.userGetCart);
+router.post("/cart", isAuth_1.default, userController_1.userAddToCart);
+router.put("/cart/:id", isAuth_1.default, userController_1.userDeleteCartItem);
+router.delete("/cart", isAuth_1.default, userController_1.userClearCart);
+router.put("/profile", isAuth_1.default, userController_1.userUpdateProfile);
 router.post("/register", [
     check("name").trim().notEmpty().withMessage("Tên không được để trống"),
     check("email")
@@ -25,13 +21,15 @@ router.post("/register", [
         .isEmail()
         .withMessage("email không đúng")
         .normalizeEmail()
-        .custom((value, { req }) => __awaiter(void 0, void 0, void 0, function* () {
-        const existedUser = yield userModels_1.default.findOne({ email: value });
+        .notEmpty()
+        .withMessage("email không được để trống")
+        .custom(async (value, { req }) => {
+        const existedUser = await userModels_1.default.findOne({ email: value });
         if (existedUser) {
             throw new Error("Email đã tồn tại");
         }
         return true;
-    })),
+    }),
     check("password")
         .trim()
         .isLength({ min: 5 })
@@ -53,4 +51,26 @@ router.post("/login", [
         .withMessage("Password ít nhất 5 ký tự"),
 ], userController_1.userLogin);
 router.get("/profile", isAuth_1.default, userController_1.userProfile);
+router.post("/profile", isAuth_1.default, [
+    body("name").trim().notEmpty().withMessage("Tên không được để trống"),
+    body("email")
+        .trim()
+        .isEmail()
+        .withMessage("email không đúng")
+        .normalizeEmail()
+        .custom(async (value, { req }) => {
+        const existedUser = (await userModels_1.default.findOne({
+            email: value,
+            _id: { $ne: req.userId },
+        }));
+        if (existedUser) {
+            throw new Error("Email đã tồn tại");
+        }
+        return true;
+    }),
+    body("password")
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage("Password ít nhất 5 ký tự"),
+], userController_1.userUpdateProfile);
 exports.default = router;

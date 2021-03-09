@@ -1,21 +1,12 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const puppeteer = require("puppeteer");
 const fs = require("fs");
-const makeRequest = (page, urls) => __awaiter(void 0, void 0, void 0, function* () {
+const makeRequest = async (page, urls) => {
     let products = [];
     for (let url of urls) {
         try {
-            yield page.goto(`${url}`, { waitUntil: "networkidle2" });
-            const data = yield page.evaluate(() => {
+            await page.goto(`${url}`, { waitUntil: "networkidle2" });
+            const data = await page.evaluate(() => {
                 const images = document.querySelectorAll(".swiper-slide img") || "";
                 const arrImage = Array.from(images).map((i) => i.src) || [];
                 const description = document.querySelector(".st-pd-content p")
@@ -67,13 +58,13 @@ const makeRequest = (page, urls) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
     return products;
-});
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    const browser = yield puppeteer.launch({ headless: false });
-    const page = yield browser.newPage();
-    yield page.setDefaultNavigationTimeout(0);
-    yield page.goto("https://fptshop.com.vn/dien-thoai?sort=gia-cao-den-thap&trang=13");
-    const links = yield page.evaluate(() => {
+};
+(async () => {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
+    await page.setDefaultNavigationTimeout(0);
+    await page.goto("https://fptshop.com.vn/dien-thoai?sort=gia-cao-den-thap&trang=13");
+    const links = await page.evaluate(() => {
         let ProductsLinks = Array.from(document.querySelectorAll(".cdt-product__img a")).map((i) => (i.href === "" ? null : i.href));
         return ProductsLinks;
     });
@@ -81,9 +72,9 @@ const makeRequest = (page, urls) => __awaiter(void 0, void 0, void 0, function* 
     fs.writeFile("links.json", JSON.stringify(links), () => {
         console.log("Links OK");
     });
-    const products = yield makeRequest(page, links);
+    const products = await makeRequest(page, links);
     fs.writeFile("data.json", JSON.stringify(products), () => {
         console.log("products OK");
     });
-    yield browser.close();
-}))();
+    await browser.close();
+})();

@@ -34,7 +34,11 @@ export default createMuiTheme({
     table: {
       borderColor: "grey",
     },
-
+    MuiFormLabel: {
+      root: {
+        color: theme.palette.common.black,
+      },
+    },
     buttonWrapper: {
       position: "absolute",
       height: "100% !important",

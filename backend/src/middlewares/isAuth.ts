@@ -17,7 +17,7 @@ const isAuth = (req: Request, res: Response, next: NextFunction) => {
     throw err;
   }
   if (!decodedToken) {
-    const error = new Error("Not authenticated.");
+    const error = new Error("Not authenticated Token Error.");
     (error as any).statusCode = 401;
     throw error;
   }

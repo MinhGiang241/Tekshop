@@ -10,6 +10,7 @@ import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import { notFound } from "./controllers/errorControllers";
 import dotenv from "dotenv";
 import products from "./data/products";
+import multer from "multer";
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.send(`API is running on ${process.env.POST}`);

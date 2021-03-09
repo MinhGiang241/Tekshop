@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import { getCart } from "../store/actions/cartAction";
 
 const useStyles = makeStyles((theme: IThemeOptions) => ({
   input: { height: 100 },
@@ -37,7 +38,11 @@ const LoginScreen = ({ match, location, history, children, setValue }: any) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const userLogin = useSelector((state: any) => state.userLogin);
-  const { loading = false, error, userInfo } = userLogin;
+  const {
+    loading = false,
+    error,
+    userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
+  } = userLogin;
 
   const [open, setOpen] = React.useState(false);
   const handleOpenModal = () => {
@@ -48,6 +53,7 @@ const LoginScreen = ({ match, location, history, children, setValue }: any) => {
     setOpen(false);
     setValue(0);
     history.push("/");
+    dispatch(getCart(userInfo.token));
   };
 
   useEffect(() => {

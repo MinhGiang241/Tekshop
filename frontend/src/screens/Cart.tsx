@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, RouteChildrenProps } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { IThemeOptions } from "../components/Theme";
-import { addToCart } from "../store/actions/cartAction";
 import numeral from "numeral";
+import { getCart, deleteCartItem } from "../store/actions/cartAction";
+import Loading from "../components/Loading";
 import {
   Container,
   Grid,
@@ -28,105 +29,143 @@ const useStyles = makeStyles((theme: IThemeOptions) => ({
 // eslint-disable-next-line
 const CartList = ({ match, location, history }: RouteChildrenProps<any>) => {
   const productId = match!.params.id;
-  const qty = location.search ? Number(location.search.split("=")[1]) : 1;
+
   const dispatch = useDispatch();
+
   const [total, setTotal] = useState(0);
-  const [productQty, setProductQty] = useState(Number(qty));
 
   const classes = useStyles();
 
   const userLogin = useSelector((state: any) => state.userLogin);
-  const { loading = false, error, userInfo } = userLogin;
+  const qty = location.search ? Number(location.search.split("=")[1]) : 1;
+  const [productQty, setProductQty] = useState(Number(qty));
 
-  const cartItems = userInfo.cart.items;
+  const {
+    userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
+  } = userLogin;
+  const userError = userLogin.error;
+  const userLoading = userLogin.loading;
+  const token = userInfo.token;
 
-  const handleDeleteFromCart = (id: any) => {};
+  const cartItems = useSelector((state: any) => state.cart.cartItems);
+  const cartError = useSelector((state: any) => state.cart.error);
+  const cartLoading = useSelector((state: any) => state.cart.loading);
+
+  const [loading, setLoading] = useState(userLoading && cartLoading);
+  const [error, setError] = useState("");
+
+  const handleDeleteFromCart = (id: any) => {
+    dispatch(deleteCartItem(id, token));
+  };
 
   useEffect(() => {
-    if (productId) {
-      dispatch(addToCart(productId, qty));
-    }
+    setLoading(userLoading || cartLoading);
+    setError(userError || cartError);
     const totalPrice = cartItems.reduce((a: any, b: any) => {
       const total =
-        a + Number(productQty) * Number(b.price.replace(/[.]/g, ""));
+        a + Number(b.quantity) * Number(b.price.replace(/[.]/g, ""));
       return total;
     }, 0);
     setTotal(totalPrice);
-  }, [dispatch, productId, qty, cartItems, productQty]);
+  }, [
+    dispatch,
+    productId,
+    qty,
+    cartItems,
+    userLoading,
+    cartLoading,
+    userError,
+    cartError,
+  ]);
   return (
     <Container maxWidth="lg" style={{ minHeight: 500 }}>
-      <Grid container>
-        <Grid item container justify="center">
-          <Typography variant="h5" align="center">
-            GIỎ HÀNG
-          </Typography>
-        </Grid>
-        <Grid item container justify="center">
-          {cartItems.length === 0 && (
-            // @ts-ignore
-            <Alert severity="info">
-              <Typography variant="body1" align="center">
-                Chưa có sản phẩm nào
-              </Typography>
-            </Alert>
-          )}
-        </Grid>
-        <Grid item container justify="center">
-          <Typography variant="h6" align="center">
-            Tổng cộng:{numeral(total).format("0,0")}đ
-          </Typography>
-        </Grid>
-        <Grid item container>
-          {cartItems.map((p: any) => (
-            <Grid item container justify="center" key={p.name}>
-              <Card className={classes.cartItem}>
-                <CardMedia
-                  className={classes.cartItemImage}
-                  image={p.image[0]}
-                />
-                <CardContent className={classes.cardContent}>
-                  <Grid
-                    container
-                    alignItems="center"
-                    style={{ height: "100%" }}
-                  >
-                    <Grid item lg={6}>
-                      <Typography variant="body1">{p.name}</Typography>
-                    </Grid>
-                    <Grid item lg={3}>
-                      <Typography variant="body1">Giá: {p.price}đ</Typography>
-                    </Grid>
-                    <Grid item lg={3} style={{ display: "flex" }}>
-                      <Typography variant="body1" align="center">
-                        Số lượng:
-                      </Typography>{" "}
-                      <Select
-                        style={{ marginLeft: 10, height: 24 }}
-                        value={productQty}
-                        onChange={(e: any) => {
-                          setProductQty(Number(e.target.value));
-                          dispatch(addToCart(p._id, Number(e.target.value)));
-                        }}
-                      >
-                        {Array.from({ length: p.countInStock }, (v, x) => (
-                          <option key={x + 1} value={x + 1}>
-                            {x + 1}
-                          </option>
-                        ))}
-                      </Select>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-                <CardActions>
-                  <IconButton onClick={() => handleDeleteFromCart(p._id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </CardActions>
-              </Card>
+      {loading ? (
+        <div style={{ height: "100%" }}>
+          <Grid
+            container
+            style={{ height: 500 }}
+            justify="center"
+            alignItems="center"
+          >
+            <Grid item>
+              <Loading />
             </Grid>
-          ))}
+          </Grid>
+        </div>
+      ) : (
+        <Grid container>
+          <Grid item container justify="center">
+            <Typography variant="h5" align="center">
+              GIỎ HÀNG
+            </Typography>
+          </Grid>
+          <Grid item container justify="center">
+            {error ? (
+              // @ts-ignore
+              <Alert severity="error">
+                <Typography variant="body1" align="center">
+                  {error}
+                </Typography>
+              </Alert>
+            ) : (
+              cartItems.length === 0 && (
+                // @ts-ignore
+                <Alert severity="info">
+                  <Typography variant="body1" align="center">
+                    Chưa có sản phẩm nào
+                  </Typography>
+                </Alert>
+              )
+            )}
+          </Grid>
+          <Grid item container justify="center">
+            <Typography variant="h6" align="center">
+              Tổng cộng:{numeral(total).format("0,0")}đ
+            </Typography>
+          </Grid>
+          <Grid item container>
+            {cartItems.map((p: any) => (
+              <Grid item container justify="center" key={p.name}>
+                <Card className={classes.cartItem}>
+                  <CardMedia
+                    className={classes.cartItemImage}
+                    image={p.image}
+                  />
+                  <CardContent className={classes.cardContent}>
+                    <Grid
+                      container
+                      alignItems="center"
+                      style={{ height: "100%" }}
+                    >
+                      <Grid item lg={6}>
+                        <Typography variant="body1">{p.name}</Typography>
+                      </Grid>
+                      <Grid item lg={3}>
+                        <Typography variant="body1">Giá: {p.price}đ</Typography>
+                      </Grid>
+                      <Grid item lg={3} style={{ display: "flex" }}>
+                        <Typography variant="body1" align="center">
+                          Số lượng: {p.quantity}
+                        </Typography>{" "}
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                  <CardActions>
+                    <IconButton
+                      onClick={() => {
+                        console.log("p", p);
+                        handleDeleteFromCart(p._id);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </Container>
   );
 };

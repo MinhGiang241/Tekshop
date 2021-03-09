@@ -31,7 +31,6 @@ import { USER_LOGOUT } from "../store/constants/userConstants";
 import logo from "../assets/logo.png";
 import { useHistory } from "react-router-dom";
 import Modal from "../components/Modal";
-
 interface Props {
   window?: () => Window;
   children?: React.ReactElement | any;
@@ -119,6 +118,14 @@ export default function Header(props: any) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const dispatch = useDispatch();
+  const userLogin = useSelector((state: any) => state.userLogin);
+
+  const {
+    loading = false,
+    error,
+    userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
+  } = userLogin;
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -126,7 +133,6 @@ export default function Header(props: any) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const userInfo = useSelector((state: any) => state.userLogin.userInfo);
 
   const [open, setOpen] = React.useState(false);
   const handleOpenModal = () => {
@@ -329,7 +335,11 @@ export default function Header(props: any) {
                 Hồ sơ
               </Link>
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+              }}
+            >
               <Link className={classes.link} to="/cart">
                 Giỏ hàng
               </Link>

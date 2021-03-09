@@ -4,6 +4,7 @@ import {
   listProductsDetails,
   clearData,
 } from "../store/actions/productActions";
+import { getCart, addToCart } from "../store/actions/cartAction";
 import {
   Container,
   Grid,
@@ -60,13 +61,20 @@ export default function Product({ match, history }: RouteChildrenProps<any>) {
   const productDetails = useSelector((state: any) => state.productDetails);
   const { loading = true, error, product } = productDetails;
   const userLogin = useSelector((state: any) => state.userLogin);
-  const { userInfo } = userLogin;
+  const {
+    userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
+  } = userLogin;
+  const cart = useSelector((state: any) => state.cart);
+  const token = localStorage.getItem("token") || userInfo.token;
 
+  const cartItems = cart.cartItems;
   const addToCartHandle = () => {
     if (!userInfo) {
       return history.push("/signin");
     }
-    history.push(`/cart/${id}?qty=${qty}`);
+    dispatch(addToCart(id, qty, token));
+
+    history.push("/cart");
   };
 
   useEffect(() => {
@@ -75,7 +83,7 @@ export default function Product({ match, history }: RouteChildrenProps<any>) {
     return () => {
       dispatch(clearData());
     };
-  }, [dispatch, id]);
+  }, [dispatch, id, cartItems]);
 
   const productSpecification = [
     { name: "Màn hình", data: product.screen },

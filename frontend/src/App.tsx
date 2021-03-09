@@ -9,6 +9,7 @@ import Product from "./screens/Product";
 import Cart from "./screens/Cart";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
+import Profile from "./screens/Profile";
 
 function App() {
   const [value, setValue] = useState<number>(0);
@@ -17,7 +18,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Header value={value} setValue={setValue} />
-        <div style={{ minHeight: 500 }}>
+        <div style={{ minHeight: 500, marginBottom: 100 }}>
           <Route
             path="/"
             render={(routeProps) => <Home {...routeProps} />}
@@ -49,6 +50,13 @@ function App() {
             path="/signup"
             render={(routeProps) => (
               <Register {...routeProps} value={value} setValue={setValue} />
+            )}
+            exact
+          />
+          <Route
+            path="/profile"
+            render={(routeProps) => (
+              <Profile {...routeProps} value={value} setValue={setValue} />
             )}
             exact
           />

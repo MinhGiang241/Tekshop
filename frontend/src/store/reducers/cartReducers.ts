@@ -1,20 +1,53 @@
-import { CART_ADD_ITEM } from "../constants/cartConstants";
+import {
+  GET_CART_REQUEST,
+  GET_CART_SUCCESS,
+  GET_CART_FAIL,
+  ADD_TO_CART_REQUEST,
+  ADD_TO_CART_SUCCESS,
+  ADD_TO_CART_FAIL,
+  DELETE_CART_ITEM_REQUEST,
+  DELETE_CART_ITEM_SUCCESS,
+  DELETE_CART_ITEM_FAIL,
+} from "../constants/cartConstants";
 
 export const cartReducer = (state = { cartItems: [] }, action: any) => {
   switch (action.type) {
-    case CART_ADD_ITEM:
-      const item = action.payload.product;
-      const existItem = state.cartItems.find((x: any) => x._id === item._id);
-      if (existItem) {
-        return {
-          ...state,
-          cartItems: state.cartItems.map((x: any) =>
-            // @ts-ignore
-            x.product === existItem.product ? item : x
-          ),
-        };
-      }
-      return { ...state, cartItems: [...state.cartItems, item] };
+    case GET_CART_REQUEST:
+      return { loading: true, cartItems: [] };
+    case GET_CART_SUCCESS:
+      return {
+        loading: false,
+        cartItems: [...action.payload],
+      };
+    case GET_CART_FAIL:
+      return { loading: false, cartItems: [], error: action.payload };
+
+    case ADD_TO_CART_REQUEST:
+      return { loading: true, cartItems: [] };
+    case ADD_TO_CART_SUCCESS:
+      return {
+        loading: false,
+        cartItems: [...action.payload],
+      };
+    case ADD_TO_CART_FAIL:
+      return {
+        loading: false,
+        cartItems: [],
+        error: action.payload,
+      };
+    case DELETE_CART_ITEM_REQUEST:
+      return { loading: true, cartItems: [] };
+    case DELETE_CART_ITEM_SUCCESS:
+      return {
+        loading: false,
+        cartItems: [...action.payload],
+      };
+    case DELETE_CART_ITEM_FAIL:
+      return {
+        loading: false,
+        cartItems: [],
+        error: action.payload,
+      };
     default:
       return state;
   }

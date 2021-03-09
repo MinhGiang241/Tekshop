@@ -1,0 +1,26 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}\\backend\\dist\\server.js",
+      "restart":true,
+      "runtimeExecutable":"nodemon",
+      "console":"integratedTerminal",
+      // "env": {
+      //   "MONGO_USER": "minhgiang241",
+      //   "MONGO_PASSWORD": "concoc221992",
+      //   "MONGODB_DATABASE": "book",
+      //   "STRIPE_KEY": "sk_test_51HuKlfFCT2X6vvt5YzOBc6CWgvYlb27kXoFRb1JCgDGzzLu1tACnWeNsOgC2iqikPByp0h9qKZyBfH0RAu3kpGMD00krxroJ0p"
+      // }
+    }
+  ]
+}

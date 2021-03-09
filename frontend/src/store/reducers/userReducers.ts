@@ -6,6 +6,9 @@ import {
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
   USER_REGISTER_FAIL,
+  USER_UPDATE_PROFILE_REQUEST,
+  USER_UPDATE_PROFILE_SUCCESS,
+  USER_UPDATE_PROFILE_FAIL,
 } from "../constants/userConstants";
 
 export const userLoginReducer = (state = {}, action: any) => {
@@ -17,7 +20,14 @@ export const userLoginReducer = (state = {}, action: any) => {
     case USER_LOGIN_FAIL:
       return { loading: false, error: action.payload };
     case USER_LOGOUT:
+      localStorage.removeItem("userInfo");
       return {};
+    case USER_UPDATE_PROFILE_REQUEST:
+      return { loading: true };
+    case USER_UPDATE_PROFILE_SUCCESS:
+      return { loading: false, userInfo: action.payload };
+    case USER_UPDATE_PROFILE_FAIL:
+      return { loading: false, error: action.payload };
     default:
       return state;
   }

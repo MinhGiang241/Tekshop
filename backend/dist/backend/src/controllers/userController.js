@@ -69,12 +69,11 @@ const userProfile = async (req, res, next) => {
 exports.userProfile = userProfile;
 const userUpdateProfile = async (req, res, next) => {
     try {
-        const { name, email, password, avatar } = req.body;
         const errors = validationResult(req);
-        console.log(errors.isEmpty());
+        const { name, email, password, avatar } = req.body;
         if (!errors.isEmpty()) {
             return res.status(422).json({
-                error: errors.array()[0].msg,
+                errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(),
             });
         }
@@ -84,7 +83,7 @@ const userUpdateProfile = async (req, res, next) => {
                 error: "Tài khoản không tìm thấy",
             });
         }
-        const updatedUser = await user.updateProfile(avatar, name, email, password);
+        const updatedUser = await user.updateProfile(name, email, password, avatar);
         return res.json({
             ...updatedUser._doc,
             token: generateToken_1.default(updatedUser._id),
@@ -105,7 +104,7 @@ const userRegister = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({
-                error: errors.array()[0].msg,
+                errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(),
             });
         }
