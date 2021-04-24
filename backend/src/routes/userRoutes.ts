@@ -18,7 +18,7 @@ const router = express.Router();
 
 router.get("/cart", isAuth, userGetCart);
 router.post("/cart", isAuth, userAddToCart);
-router.put("/cart/:id", isAuth, userDeleteCartItem);
+router.put("/cart", isAuth, userDeleteCartItem);
 router.delete("/cart", isAuth, userClearCart);
 
 router.put("/profile", isAuth, userUpdateProfile);
@@ -90,7 +90,6 @@ router.post(
         return true;
       }),
     body("password")
-      .trim()
       .isLength({ min: 5 })
       .withMessage("Password ít nhất 5 ký tự"),
   ],

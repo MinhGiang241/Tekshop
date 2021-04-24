@@ -8,6 +8,9 @@ import {
   DELETE_CART_ITEM_REQUEST,
   DELETE_CART_ITEM_SUCCESS,
   DELETE_CART_ITEM_FAIL,
+  CLEAR_CART_REQUEST,
+  CLEAR_CART_SUCCESS,
+  CLEAR_CART_FAIL,
 } from "../constants/cartConstants";
 
 export const cartReducer = (state = { cartItems: [] }, action: any) => {
@@ -43,6 +46,21 @@ export const cartReducer = (state = { cartItems: [] }, action: any) => {
         cartItems: [...action.payload],
       };
     case DELETE_CART_ITEM_FAIL:
+      return {
+        loading: false,
+        cartItems: [],
+        error: action.payload,
+      };
+    case CLEAR_CART_REQUEST:
+      return {
+        loading: true,
+      };
+    case CLEAR_CART_SUCCESS:
+      return {
+        loading: false,
+        cartItems: action.payload,
+      };
+    case CLEAR_CART_FAIL:
       return {
         loading: false,
         cartItems: [],

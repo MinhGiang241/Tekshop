@@ -21,10 +21,12 @@ export const userLoginReducer = (state = {}, action: any) => {
       return { loading: false, error: action.payload };
     case USER_LOGOUT:
       localStorage.removeItem("userInfo");
+      localStorage.removeItem("cart");
       return {};
     case USER_UPDATE_PROFILE_REQUEST:
       return { loading: true };
     case USER_UPDATE_PROFILE_SUCCESS:
+      console.log("action.payload", action.payload);
       return { loading: false, userInfo: action.payload };
     case USER_UPDATE_PROFILE_FAIL:
       return { loading: false, error: action.payload };

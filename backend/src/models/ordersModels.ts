@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema(
       require: true,
       ref: "User",
     },
-    orderItem: [
+    orderItems: [
       {
         name: {
           type: String,
@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema(
           require: true,
         },
         price: {
-          type: Number,
+          type: String,
           require: true,
         },
         product: {
@@ -32,27 +32,43 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    nameOrder: {
+      type: String,
+      require: true,
+    },
     shippingAddress: {
       address: {
         type: String,
         require: true,
       },
-      city: {
+      province: {
         type: String,
         require: true,
       },
-      postalCode: {
+      district: {
         type: String,
         require: true,
       },
-      country: {
+      ward: {
+        type: String,
+        require: true,
+      },
+      phone: {
         type: String,
         require: true,
       },
     },
     paymentMethod: {
-      type: String,
-      require: true,
+      method: {
+        type: String,
+        require: true,
+      },
+      visa: {
+        nameCard: { type: String, require: true },
+        cardNumber: { type: String, require: true },
+        expire: { type: String, require: true },
+        cvv: { type: String, require: true },
+      },
     },
     paymentResult: {
       id: {
@@ -92,7 +108,7 @@ const orderSchema = new mongoose.Schema(
       type: Date,
     },
     isDelivered: {
-      type: Number,
+      type: Boolean,
       require: true,
       default: false,
     },

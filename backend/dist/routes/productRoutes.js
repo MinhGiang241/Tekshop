@@ -8,4 +8,5 @@ const productControllers_1 = require("../controllers/productControllers");
 const router = express_1.default.Router();
 router.get("/", productControllers_1.getAllProducts);
 router.get("/:id", productControllers_1.getProduct);
+router.post("/review/:id", productControllers_1.postReviews);
 exports.default = router;

@@ -20,12 +20,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function TransitionsModal({
+const TransitionsModal: React.FC<any> = ({
   handleCloseModal,
   handleOpenModal,
   text,
   open,
-}: any) {
+}) => {
   const classes = useStyles();
 
   return (
@@ -49,4 +49,6 @@ export default function TransitionsModal({
       </Fade>
     </Modal>
   );
-}
+};
+
+export default TransitionsModal;

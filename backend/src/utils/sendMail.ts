@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
     pass: password,
   },
 });
+
 export const sendWelcomeEmail = (email: string, name: string) => {
   let mailOptions = {
     from: mail,

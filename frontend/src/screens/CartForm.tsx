@@ -4,13 +4,17 @@ import { Link, RouteChildrenProps } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { IThemeOptions } from "../components/Theme";
 import numeral from "numeral";
-import { getCart, deleteCartItem } from "../store/actions/cartAction";
+import {
+  getCart,
+  deleteCartItem,
+  clearCartItem,
+} from "../store/actions/cartActions";
 import Loading from "../components/Loading";
 import {
   Container,
   Grid,
   Typography,
-  Select,
+  Button,
   Card,
   CardMedia,
   CardContent,
@@ -22,30 +26,22 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles((theme: IThemeOptions) => ({
   cartItem: { width: "80%", height: 100, display: "flex", marginBottom: 10 },
-  cartItemImage: { width: "20%", height: "80%", margin: 10 },
+  cartItemImage: { height: "90%", margin: 10 },
   cardContent: { flex: 1 },
 }));
 
 // eslint-disable-next-line
-const CartList = ({ match, location, history }: RouteChildrenProps<any>) => {
-  const productId = match!.params.id;
-
+const CartList: React.FC<any> = ({ history }) => {
   const dispatch = useDispatch();
-
-  const [total, setTotal] = useState(0);
-
   const classes = useStyles();
-
+  const [total, setTotal] = useState(0);
   const userLogin = useSelector((state: any) => state.userLogin);
-  const qty = location.search ? Number(location.search.split("=")[1]) : 1;
-  const [productQty, setProductQty] = useState(Number(qty));
-
   const {
     userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
   } = userLogin;
-  const userError = userLogin.error;
-  const userLoading = userLogin.loading;
   const token = userInfo.token;
+  const userLoading = userLogin.loading;
+  const userError = userLogin.error;
 
   const cartItems = useSelector((state: any) => state.cart.cartItems);
   const cartError = useSelector((state: any) => state.cart.error);
@@ -58,6 +54,13 @@ const CartList = ({ match, location, history }: RouteChildrenProps<any>) => {
     dispatch(deleteCartItem(id, token));
   };
 
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      return history.push("/");
+    }
+    return history.push("/checkout");
+  };
+
   useEffect(() => {
     setLoading(userLoading || cartLoading);
     setError(userError || cartError);
@@ -68,17 +71,18 @@ const CartList = ({ match, location, history }: RouteChildrenProps<any>) => {
     }, 0);
     setTotal(totalPrice);
   }, [
+    total,
+    setTotal,
     dispatch,
-    productId,
-    qty,
     cartItems,
     userLoading,
     cartLoading,
     userError,
     cartError,
+    token,
   ]);
   return (
-    <Container maxWidth="lg" style={{ minHeight: 500 }}>
+    <Container maxWidth="lg" style={{ backgroundColor: "transparent" }}>
       {loading ? (
         <div style={{ height: "100%" }}>
           <Grid
@@ -120,16 +124,17 @@ const CartList = ({ match, location, history }: RouteChildrenProps<any>) => {
           </Grid>
           <Grid item container justify="center">
             <Typography variant="h6" align="center">
-              Tổng cộng:{numeral(total).format("0,0")}đ
+              Tổng cộng:{numeral(total).format("0,0").replaceAll(",", ".")}đ
             </Typography>
           </Grid>
           <Grid item container>
             {cartItems.map((p: any) => (
               <Grid item container justify="center" key={p.name}>
                 <Card className={classes.cartItem}>
-                  <CardMedia
+                  <img
                     className={classes.cartItemImage}
-                    image={p.image}
+                    src={p.image}
+                    alt={p.image}
                   />
                   <CardContent className={classes.cardContent}>
                     <Grid
@@ -164,6 +169,13 @@ const CartList = ({ match, location, history }: RouteChildrenProps<any>) => {
               </Grid>
             ))}
           </Grid>
+        </Grid>
+      )}
+      {!loading && (
+        <Grid item container justify="center">
+          <Button variant="contained" color="primary" onClick={handleCheckout}>
+            {cartItems.length === 0 ? "Trang chủ" : "Tiếp tục"}
+          </Button>
         </Grid>
       )}
     </Container>

@@ -52,7 +52,7 @@ userSchema.methods.updateProfile = async function (avatar, name, email, password
     }
     this.name = name;
     this.email = email;
-    if (password) {
+    if (password !== "*****") {
         this.password = password;
     }
     return this.save();

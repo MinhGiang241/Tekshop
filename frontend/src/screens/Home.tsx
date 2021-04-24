@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
-import { IThemeOptions } from "../components/Theme";
 import { useDispatch, useSelector } from "react-redux";
 import { listProducts } from "../store/actions/productActions";
 import Loading from "../components/Loading";
 import Alert from "@material-ui/lab/Alert";
 import Pagination from "@material-ui/lab/Pagination";
 import Skeleton from "@material-ui/lab/Skeleton";
+import banner from "../assets/images/banner.jpg";
+import banner1 from "../assets/images/banner1.png";
 
 import {
   Card,
@@ -18,10 +19,12 @@ import {
   useMediaQuery,
   GridList,
   Container,
+  Button,
   GridListTile,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Rating from "../components/Rating";
+import Carousel from "react-material-ui-carousel";
 
 import apple from "../assets/logo/apple.jpg";
 import samsung from "../assets/logo/samsung.jpg";
@@ -45,20 +48,7 @@ const logos = [
   { brand: "vsmart", src: vsmart },
 ];
 
-type Products = {
-  _id: string;
-  name: string;
-  image: string;
-  description: string;
-  brand: string;
-  category: string;
-  price: number;
-  countInStock: number;
-  rating: number;
-  numReviews: number;
-};
-
-const useStyles = makeStyles((theme: IThemeOptions) =>
+const useStyles = makeStyles((theme: any) =>
   createStyles({
     card: {
       width: 230,
@@ -70,7 +60,7 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
     cardTitle: { fontSize: 17 },
     cardSubheader: { fontSize: 11 },
     icon: { fontSize: 20 },
-    text: {},
+
     cardLink: {
       display: "flex",
       maxWidth: 230,
@@ -87,15 +77,57 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
     logoContainer: {
       marginBottom: "2em",
     },
-    logo: { width: "100%" },
+    logo: { width: "100%", height: 35 },
     pagination: {
       width: 500,
       margin: "auto",
     },
+    skeleton: {
+      display: "flex",
+      justifyContent: "center",
+      margin: "0 auto",
+    },
+    layout: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left: 0,
+      backgroundColor: "rgba(0,0,0,0.3)",
+      zIndex: 0,
+    },
+    heroButtons: {
+      marginTop: theme.spacing(4),
+    },
+    heroContent: {
+      position: "relative",
+      backgroundColor: theme.palette.background.paper,
+      marginBottom: theme.spacing(5),
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
+    },
+    banner: {
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
+      position: "relative",
+      width: "100%",
+      height: "26rem",
+    },
+    overlay: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left: 0,
+      backgroundColor: "rgba(0,0,0,.3)",
+    },
+    mainFeaturedPostContent: {},
   })
 );
 
-export default function Home(props: any) {
+const Home: React.FC<any> = (props) => {
   const theme = useTheme();
   const matchesMD = useMediaQuery(theme.breakpoints.down("md"));
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
@@ -108,7 +140,6 @@ export default function Home(props: any) {
   const productList = useSelector((state: any) => state.productList);
   const userInfo = useSelector((state: any) => state.userLogin);
 
-  //@ts-ignore
   const { loading = true, error, products } = productList;
 
   const perPage = 15;
@@ -127,7 +158,30 @@ export default function Home(props: any) {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" style={{ backgroundColor: "transparent" }}>
+      <div className={classes.heroContent}>
+        <Carousel
+          animation="slide"
+          fullHeightHover={true}
+          indicators={false}
+          // @ts-ignore
+          navButtonsProps={{
+            style: {
+              display: "none",
+            },
+          }}
+        >
+          {[banner, banner1].map((p: any, i: any) => (
+            // <img src={p} alt={i} height="100px" />
+            <div
+              key={i}
+              className={classes.banner}
+              style={{ backgroundImage: `url(${p})` }}
+            />
+          ))}
+        </Carousel>
+        <div className={classes.layout} />
+      </div>
       {matchesMD || (
         <Grid item container className={classes.logoContainer}>
           {logos.map((i: any) => (
@@ -139,12 +193,18 @@ export default function Home(props: any) {
       )}
       {loading ? (
         <GridList
+          className={classes.skeleton}
           cellHeight={380}
           cols={matchesXS ? 1 : matchesSM ? 2 : matchesMD ? 3 : 5}
         >
           {Array.from(new Array(15)).map((p: any, i: any) => (
-            <GridListTile key={i} style={{ marginBottom: 25 }}>
-              <Skeleton variant="rect" width={230} height={400}></Skeleton>
+            <GridListTile key={i}>
+              <Skeleton
+                variant="rect"
+                width={230}
+                height={350}
+                style={{ margin: "0 auto" }}
+              ></Skeleton>
             </GridListTile>
           ))}
         </GridList>
@@ -157,10 +217,10 @@ export default function Home(props: any) {
         <Grid container>
           <Grid item container>
             <GridList
-              cellHeight={380}
+              cellHeight={350}
               cols={matchesXS ? 1 : matchesSM ? 2 : matchesMD ? 3 : 5}
             >
-              {products.products.map((product: Products) => (
+              {products.products.map((product: any) => (
                 <GridListTile key={product._id}>
                   <Link
                     to={`/product/${product._id}`}
@@ -188,7 +248,7 @@ export default function Home(props: any) {
                             justify="center"
                             alignItems="center"
                           >
-                            <Typography variant="h6" className={classes.text}>
+                            <Typography variant="h6" color="textPrimary">
                               {product.price}đ
                             </Typography>
                           </Grid>
@@ -219,4 +279,6 @@ export default function Home(props: any) {
       )}
     </Container>
   );
-}
+};
+
+export default Home;

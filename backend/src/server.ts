@@ -6,6 +6,7 @@ import User from "./models/userModels";
 import Product from "./models/productModels";
 import productRoutes from "./routes/productRoutes";
 import userRoutes from "./routes/userRoutes";
+import orderRoutes from "./routes/orderRoutes";
 import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import { notFound } from "./controllers/errorControllers";
 import dotenv from "dotenv";
@@ -32,14 +33,13 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.send(`API is running on ${process.env.POST}`);
 });
 
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.use(notFound);
 

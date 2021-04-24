@@ -59,7 +59,7 @@ userSchema.methods.updateProfile = async function (
   }
   (this as any).name = name;
   (this as any).email = email;
-  if (password) {
+  if (password !== "*****") {
     (this as any).password = password;
   }
   return this.save();

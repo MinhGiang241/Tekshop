@@ -31,8 +31,35 @@ let theme = createMuiTheme({});
 
 export default createMuiTheme({
   overrides: {
+    MuiCssBaseline: {
+      "@global": {
+        "*, *::before, *::after": {
+          boxSizing: "content-box",
+        },
+        img: { display: "bock" },
+        a: {
+          textDecoration: "none",
+          color: greenColor,
+        },
+        ul: {
+          margin: 0,
+          padding: 0,
+          listStyle: "none",
+        },
+      },
+    },
+
+    MuiTypography: {
+      colorTextPrimary: { color: "black" },
+      colorTextSecondary: { color: "white" },
+    },
     table: {
       borderColor: "grey",
+    },
+    MuiContainer: {
+      root: {
+        backgroundColor: "#fff",
+      },
     },
     MuiFormLabel: {
       root: {
@@ -72,10 +99,12 @@ export default createMuiTheme({
     },
 
     MuiTab: {
+      textColorSecondary: { color: "#fff" },
       root: {
         [theme.breakpoints.up("sm")]: {
           minWidth: 100,
         },
+        color: "#fff",
       },
     },
     MuiFilledInput: {

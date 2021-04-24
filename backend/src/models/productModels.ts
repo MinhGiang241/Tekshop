@@ -116,6 +116,20 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+const Reviews = mongoose.model("review", reviewSchema);
+
+productSchema.methods.addReview = function (name: string, comment: string) {
+  const newReview = new Reviews();
+  newReview.name = name;
+  newReview.comment = comment;
+  newReview.rating = 5;
+  console.log("newReview", newReview);
+  const newReviews = [...(this as any).reviews, newReview];
+  (this as any).reviews = newReviews;
+  (this as any).numReviews = (this as any).numReviews + 1;
+  return (this as any).save();
+};
+
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;

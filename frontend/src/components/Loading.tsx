@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
   })
 );
 
-export default function Loading(props: any) {
+export default function Loading() {
   const classes = useStyles();
   return (
     <div className={classes.skChase}>

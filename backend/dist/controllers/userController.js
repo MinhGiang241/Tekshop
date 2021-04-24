@@ -136,15 +136,17 @@ const userRegister = async (req, res, next) => {
 exports.userRegister = userRegister;
 const userGetCart = async (req, res, next) => {
     try {
-        const user = (await userModels_1.default.findById(req.userId)
-            .select("cart")
-            .populate("cart.items.productId", "image name price"));
+        const user = (await userModels_1.default.findById(req.userId));
         if (!user) {
             return res.status(404).json({
                 error: "Tài khoản không tồn tại",
             });
         }
-        const cart = await user.getCart();
+        await user.getCart();
+        const newUser = (await userModels_1.default.findById(req.userId)
+            .select("cart")
+            .populate("cart.items.productId", "image name price"));
+        const cart = newUser.cart.items;
         const newCart = cart.map((i) => {
             return {
                 image: i.productId.image[0],
@@ -198,7 +200,6 @@ exports.userAddToCart = userAddToCart;
 const userDeleteCartItem = async (req, res, next) => {
     try {
         const { productId } = req.body;
-        console.log("body", req.params);
         const user = (await userModels_1.default.findById(req.userId));
         if (!user) {
             return res.status(404).json({

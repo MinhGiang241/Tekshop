@@ -51,3 +51,29 @@ export const getProduct = async (
     next(err);
   }
 };
+
+export const postReviews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, comment } = req.body;
+    const id = req.params.id;
+    const product = await Product.findById(id);
+
+    if (!product) {
+      res.status(404);
+      const error = new Error("Products not found");
+      throw error;
+    }
+
+    await product.addReview(name, comment);
+    return res.json(product);
+  } catch (err: any) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

@@ -11,7 +11,7 @@ const isAuth_1 = __importDefault(require("../middlewares/isAuth"));
 const router = express_1.default.Router();
 router.get("/cart", isAuth_1.default, userController_1.userGetCart);
 router.post("/cart", isAuth_1.default, userController_1.userAddToCart);
-router.put("/cart/:id", isAuth_1.default, userController_1.userDeleteCartItem);
+router.put("/cart", isAuth_1.default, userController_1.userDeleteCartItem);
 router.delete("/cart", isAuth_1.default, userController_1.userClearCart);
 router.put("/profile", isAuth_1.default, userController_1.userUpdateProfile);
 router.post("/register", [
@@ -69,7 +69,6 @@ router.post("/profile", isAuth_1.default, [
         return true;
     }),
     body("password")
-        .trim()
         .isLength({ min: 5 })
         .withMessage("Password ít nhất 5 ký tự"),
 ], userController_1.userUpdateProfile);

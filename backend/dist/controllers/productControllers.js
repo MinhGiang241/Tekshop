@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProduct = exports.getAllProducts = void 0;
+exports.postReviews = exports.getProduct = exports.getAllProducts = void 0;
 const productModels_1 = __importDefault(require("../models/productModels"));
 const getAllProducts = async (req, res, next) => {
     try {
@@ -47,3 +47,24 @@ const getProduct = async (req, res, next) => {
     }
 };
 exports.getProduct = getProduct;
+const postReviews = async (req, res, next) => {
+    try {
+        const { name, comment } = req.body;
+        const id = req.params.id;
+        const product = await productModels_1.default.findById(id);
+        if (!product) {
+            res.status(404);
+            const error = new Error("Products not found");
+            throw error;
+        }
+        await product.addReview(name, comment);
+        return res.json(product);
+    }
+    catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+};
+exports.postReviews = postReviews;

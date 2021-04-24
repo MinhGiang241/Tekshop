@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, useTheme, createStyles } from "@material-ui/core/styles";
 import { IThemeOptions } from "./Theme";
-import { IconButton, Typography, Grid, Toolbar } from "@material-ui/core";
+import { Typography, Grid, Container, Link, Box } from "@material-ui/core";
 
 import FacebookIcon from "@material-ui/icons/Facebook";
 import InstagramIcon from "@material-ui/icons/Instagram";
@@ -12,121 +12,77 @@ const useStyles = makeStyles((theme: IThemeOptions) => ({
     position: "relative",
     width: "100%",
     backgroundColor: theme.palette.common.green,
-    color: theme.palette.common.white,
   },
-  socialContainer: {
-    position: "absolute",
-    right: "1.5em",
-    [theme.breakpoints.down("xs")]: {
-      right: "0.6em",
-    },
-  },
-  container: {
-    height: 180,
-  },
-  end: {
-    position: "absolute",
-    bottom: 0,
-    height: 30,
-  },
-  linkContainer: {
-    borderBottom: "1px solid white",
-    position: "absolute",
-    bottom: 30,
-  },
-  iconButton: {
-    marginTop: "auto",
-    marginLeft: "auto",
-    marginRight: 2,
-    marginBottom: 2,
-  },
-  footerTitle: { fontWeight: "bold", textDecoration: "underline" },
-  icon: { fontSize: 30, color: theme.palette.common.white },
   text: { color: theme.palette.common.white },
 }));
 
-function Footer() {
+const footers = [
+  {
+    title: "Company",
+    description: ["Team", "History", "Contact us", "Locations"],
+  },
+  {
+    title: "Features",
+    description: [
+      "Cool stuff",
+      "Random feature",
+      "Team feature",
+      "Developer stuff",
+      "Another one",
+    ],
+  },
+  {
+    title: "Resources",
+    description: [
+      "Resource",
+      "Resource name",
+      "Another resource",
+      "Final resource",
+    ],
+  },
+  {
+    title: "Legal",
+    description: ["Privacy policy", "Terms of use"],
+  },
+];
+
+const Footer: React.FC<any> = () => {
   const theme = useTheme();
   const classes = useStyles();
 
   return (
-    <footer className={classes.footer}>
-      <Grid container className={classes.container}>
-        <Grid item container className={classes.linkContainer}>
-          <Grid item lg>
-            <Typography
-              align="center"
-              gutterBottom
-              className={classes.footerTitle}
-            >
-              Thông tin
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Giới thiệu
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Liên hệ
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Đối tác
-            </Typography>
-          </Grid>
-          <Grid item lg>
-            <Typography
-              align="center"
-              gutterBottom
-              className={classes.footerTitle}
-            >
-              Chính sách
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Chính sách đổi hàng
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Chính sách bảo mật
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Chính sách bảo hành
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Chính sách hoàn tiền
-            </Typography>
-          </Grid>
-          <Grid item lg>
-            <Typography
-              align="center"
-              gutterBottom
-              className={classes.footerTitle}
-            >
-              Dịch vụ
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Thanh toán
-            </Typography>
-            <Typography align="center" gutterBottom>
-              vận chuyển
-            </Typography>
-            <Typography align="center" gutterBottom>
-              Câu hỏi thường gặp
-            </Typography>
-          </Grid>
+    // @ts-ignore
+    <div style={{ width: "100%", backgroundColor: theme.palette.common.green }}>
+      <Container maxWidth="md" component="footer" className={classes.footer}>
+        <Grid container spacing={4} justify="space-evenly">
+          {footers.map((footer: any) => (
+            <Grid item xs={6} sm={3} key={footer.title}>
+              <Typography variant="h6" className={classes.text} gutterBottom>
+                {footer.title}
+              </Typography>
+              <ul>
+                {footer.description.map((item: any) => (
+                  <li key={item}>
+                    <Link href="#" variant="subtitle1" className={classes.text}>
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Grid>
+          ))}
         </Grid>
-
-        <Grid item container className={classes.end}>
-          <Grid item>
-            <Typography variant="caption">
-              Copyright © 2017 All Rights Reserved by me.
-            </Typography>
-          </Grid>
-          <Grid item className={classes.socialContainer}>
-            <FacebookIcon />
-            <InstagramIcon />
-            <TwitterIcon />
-          </Grid>
-        </Grid>
-      </Grid>
-    </footer>
+        <Box mt={5}>
+          <Typography variant="body2" className={classes.text} align="center">
+            {"Copyright © "}
+            My Website
+            {new Date().getFullYear()}
+            {"."}
+          </Typography>
+        </Box>
+      </Container>
+    </div>
   );
-}
+};
 
 export default Footer;

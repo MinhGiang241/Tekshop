@@ -13,13 +13,14 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  Paper,
   useMediaQuery,
   Hidden,
   SwipeableDrawer,
   List,
   ListItem,
   ListItemText,
+  Tabs,
+  Tab,
   Menu,
   MenuItem,
 } from "@material-ui/core";
@@ -29,7 +30,6 @@ import PersonIcon from "@material-ui/icons/Person";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { USER_LOGOUT } from "../store/constants/userConstants";
 import logo from "../assets/logo.png";
-import { useHistory } from "react-router-dom";
 import Modal from "../components/Modal";
 interface Props {
   window?: () => Window;
@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme: IThemeOptions) =>
   })
 );
 
-export default function Header(props: any) {
+const Header: React.FC<any> = (props) => {
   const theme = useTheme();
   const { value, setValue, history, location } = props;
   const iOS =
@@ -125,6 +125,8 @@ export default function Header(props: any) {
     error,
     userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
   } = userLogin;
+
+  const cart = useSelector((state: any) => state.cart.cartItem) || [];
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -147,265 +149,122 @@ export default function Header(props: any) {
   useEffect(() => {
     switch (window.location.pathname) {
       case "/":
-        if (value !== 0 && !matchesSM) {
+        if (value !== 0) {
           setValue(0);
         }
         break;
-      case "/products":
-        if (value !== 1 && !matchesSM) {
+      case "/signin":
+        if (value !== 1) {
           setValue(1);
         }
         break;
-      case "/admin/products":
-        if (value !== 2 && !matchesSM) {
+      case "/signup":
+        if (value !== 2) {
           setValue(2);
         }
         break;
-      case "/admin":
-        if (value !== 3 && !matchesSM) {
+      case "/profile":
+        if (value !== 3) {
           setValue(3);
         }
         break;
-      case "/signup":
-        if (value !== 5 && !matchesSM) {
+      case "/cart":
+        if (value !== 4) {
           setValue(4);
         }
         break;
-      case "/signin":
-        if (value !== 6 && !matchesSM) {
-          setValue(5);
-        }
-        break;
       default:
-        setValue(9);
+        setValue(0);
         break;
     }
   }, [value, matchesSM, history]);
 
+  const handleChange = (e: React.ChangeEvent<any>, newValue: Number) => {
+    if (newValue === 5) {
+      setValue(0);
+      handleOpenModal();
+      dispatch({ type: USER_LOGOUT });
+    }
+    setOpenDrawer(false);
+    setValue(newValue);
+  };
   const tabs = (
-    <List disablePadding className={classes.list}>
-      {matchesSM ? null : (
-        <ListItem
-          className={classes.headerTab}
-          component={Link}
-          to="/"
-          selected={value === 0}
-          onClick={() => setValue(0)}
-          classes={{ selected: classes.active }}
-        >
-          <Button
-            // @ts-ignore
-            variant={value === 0 ? "contained" : "text"}
-            color="secondary"
-          >
-            <Typography
-              variant="button"
-              align="center"
-              className={classes.headerText}
-            >
-              Trang Chủ
-            </Typography>
-          </Button>
-        </ListItem>
+    <Tabs
+      value={value}
+      onChange={handleChange}
+      indicatorColor="primary"
+      textColor="secondary"
+      centered
+    >
+      {!matchesMD && (
+        <Tab label="Trang Chủ" component={Link} to="/" value={0} />
       )}
-      {matchesSM ? null : (
-        <ListItem
-          className={classes.headerTab}
-          component={Link}
-          to="/products"
-          selected={value === 1}
-          onClick={() => setValue(1)}
-        >
-          <Button
-            // @ts-ignore
-            variant={value === 1 ? "contained" : "text"}
-            color="secondary"
-          >
-            <Typography
-              variant="button"
-              align="center"
-              className={classes.headerText}
-            >
-              Sản Phẩm
-            </Typography>
-          </Button>
-        </ListItem>
+      {!userInfo && (
+        <Tab label="Đăng nhập" component={Link} to="/signin" value={1} />
       )}
-      {matchesSM ? null : (
-        <ListItem
-          className={classes.headerTab}
-          component={Link}
-          to="/admin/products"
-          selected={value === 2}
-          onClick={() => setValue(2)}
-        >
-          <Button
-            // @ts-ignore
-            variant={value === 2 ? "contained" : "text"}
-            color="secondary"
-          >
-            <Typography
-              variant="button"
-              align="center"
-              className={classes.headerText}
-            >
-              Chỉnh Sửa
-            </Typography>
-          </Button>
-        </ListItem>
+      {!userInfo && (
+        <Tab label="Đăng Ký" component={Link} to="/signup" value={2} />
       )}
-      {matchesSM ? null : (
-        <ListItem
-          className={classes.headerTab}
-          component={Link}
-          to="/admin"
-          selected={value === 3}
-          onClick={() => setValue(3)}
-        >
-          <Button
-            // @ts-ignore
-            variant={value === 3 ? "contained" : "text"}
-            color="secondary"
-          >
-            <Typography
-              variant="button"
-              align="center"
-              className={classes.headerText}
-            >
-              Thống kê
-            </Typography>
-          </Button>
-        </ListItem>
+      {userInfo && !matchesSM && (
+        <Tab label="Thông Tin" component={Link} to="/profile" value={3} />
       )}
-      {matchesXS ? null : (
-        <ListItem>
-          <Paper
-            style={{
-              width: "100%",
-              marginLeft: 10,
-              marginRight: 10,
-            }}
-          >
-            <TextField
-              autoFocus={false}
-              placeholder="Tìm kiếm sản phẩm..."
-              className={classes.search}
-              variant="filled"
-              fullWidth
-              // value={search}
-              // onChange={handleSearch}
-              InputProps={{
-                disableUnderline: true,
-                endAdornment: (
-                  <InputAdornment position="end" style={{ cursor: "pointer" }}>
-                    <IconButton>
-                      <SearchIcon color="primary" style={{ fontSize: 40 }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Paper>
-        </ListItem>
+      {userInfo && !matchesSM && (
+        <Tab label="Giỏ Hàng" component={Link} to="/cart" value={4} />
       )}
-      {userInfo ? (
-        <ListItem
-          className={classes.headerTab}
-          style={{ marginLeft: matchesSM ? "auto" : undefined }}
-        >
-          <IconButton
-            style={{ color: theme.palette.common.white }}
-            onClick={handleClick}
-            aria-controls="profile-menu"
-            aria-haspopup="true"
-          >
-            <PersonIcon />
-            <Typography variant="body1">{userInfo.name}</Typography>
-            <ArrowDropDownIcon />
-          </IconButton>
-          <Menu
-            id="profile-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleClose}>
-              <Link className={classes.link} to="/profile">
-                Hồ sơ
-              </Link>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClose();
-              }}
-            >
-              <Link className={classes.link} to="/cart">
-                Giỏ hàng
-              </Link>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                setOpen(true);
-                dispatch({ type: USER_LOGOUT });
-              }}
-            >
-              <Link className={classes.link} to="/">
-                Đăng xuất
-              </Link>
-            </MenuItem>
-          </Menu>
-        </ListItem>
-      ) : (
-        <>
+      {userInfo && <Tab label="Đăng xuất" component={Link} to="/" value={5} />}
+      {userInfo && (
+        <Hidden mdUp>
           <ListItem
-            component={Link}
-            to="/signup"
-            selected={value === 4}
+            className={classes.headerTab}
             style={{ marginLeft: matchesSM ? "auto" : undefined }}
-            onClick={() => setValue(4)}
-            className={classes.headerTab}
           >
-            <Button
-              // @ts-ignore
-              variant={value === 4 ? "contained" : "text"}
-              color="secondary"
+            <IconButton
+              style={{ color: theme.palette.common.white }}
+              onClick={handleClick}
+              aria-controls="profile-menu"
+              aria-haspopup="true"
             >
-              <Typography
-                variant="button"
-                align="center"
-                className={classes.headerText}
-              >
-                Đăng Ký
-              </Typography>
-            </Button>
-          </ListItem>
-
-          <ListItem
-            component={Link}
-            to={`/signin`}
-            selected={value === 5}
-            onClick={() => setValue(5)}
-            className={classes.headerTab}
-          >
-            <Button
-              // @ts-ignore
-              variant={value === 5 ? "contained" : "text"}
-              color="secondary"
+              <PersonIcon />
+              <Typography variant="body1">{userInfo.name}</Typography>
+              <ArrowDropDownIcon />
+            </IconButton>
+            <Menu
+              id="profile-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
             >
-              <Typography
-                variant="button"
-                align="center"
-                className={classes.headerText}
+              <MenuItem onClick={handleClose}>
+                <Link className={classes.link} to="/profile">
+                  Hồ sơ
+                </Link>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                }}
               >
-                Đăng Nhập
-              </Typography>
-            </Button>
+                <Link className={classes.link} to="/cart">
+                  Giỏ hàng
+                </Link>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  setOpen(true);
+                  dispatch({ type: USER_LOGOUT });
+                }}
+              >
+                <Link className={classes.link} to="/">
+                  Đăng xuất
+                </Link>
+              </MenuItem>
+            </Menu>
           </ListItem>
-        </>
+        </Hidden>
       )}
-    </List>
+    </Tabs>
   );
 
   const drawer = (
@@ -417,111 +276,27 @@ export default function Header(props: any) {
       onOpen={() => setOpenDrawer(true)}
       classes={{ paper: classes.drawer }}
     >
-      <List disablePadding>
-        {matchesXS ? (
-          <ListItem divider className={classes.drawItem}>
-            <TextField
-              autoFocus={false}
-              placeholder="Tìm kiếm sản phẩm..."
-              className={classes.search}
-              variant="filled"
-              // value={search}
-              // onChange={handleSearch}
-              InputProps={{
-                style: { backgroundColor: "white", overflow: "hidden" },
-                endAdornment: (
-                  <InputAdornment position="end" style={{ cursor: "pointer" }}>
-                    <IconButton>
-                      <SearchIcon color="primary" style={{ width: 30 }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </ListItem>
-        ) : null}
-        <ListItem
-          divider
-          button
-          component={Link}
-          to="/"
-          selected={value === 0}
-          style={{
-            backgroundColor:
-              // @ts-ignore
-              value === 0 ? theme.palette.common.yellow : undefined,
-          }}
-          onClick={() => {
-            setOpenDrawer(false);
-            setValue(0);
-          }}
-        >
-          <ListItemText disableTypography className={classes.drawItem}>
-            TRANG CHỦ
-          </ListItemText>
-        </ListItem>
-
-        <ListItem
-          divider
-          button
-          component={Link}
-          to="/products"
-          selected={value === 1}
-          style={{
-            backgroundColor:
-              // @ts-ignore
-              value === 1 ? theme.palette.common.yellow : undefined,
-          }}
-          onClick={() => {
-            setOpenDrawer(false);
-            setValue(1);
-          }}
-        >
-          <ListItemText disableTypography className={classes.drawItem}>
-            SẢN PHẨM
-          </ListItemText>
-        </ListItem>
-        <ListItem
-          divider
-          button
-          component={Link}
-          to="/admin/products"
-          selected={value === 2}
-          style={{
-            backgroundColor:
-              // @ts-ignore
-              value === 2 ? theme.palette.common.yellow : undefined,
-          }}
-          onClick={() => {
-            setOpenDrawer(false);
-            setValue(2);
-          }}
-        >
-          <ListItemText disableTypography className={classes.drawItem}>
-            THÊM SẢN PHẨM
-          </ListItemText>
-        </ListItem>
-        <ListItem
-          divider
-          button
-          component={Link}
-          to="/admin"
-          selected={value === 3}
-          style={{
-            backgroundColor:
-              // @ts-ignore
-              value === 3 ? theme.palette.common.yellow : undefined,
-          }}
-          onClick={() => {
-            setOpenDrawer(false);
-            setValue(3);
-          }}
-        >
-          <ListItemText disableTypography className={classes.drawItem}>
-            THỐNG KÊ
-          </ListItemText>
-        </ListItem>
-      </List>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        indicatorColor="secondary"
+        textColor="secondary"
+        orientation="vertical"
+      >
+        {<Tab label="Trang Chủ" component={Link} to="/" value={0} />}
+        {!userInfo && (
+          <Tab label="Đăng nhập" component={Link} to="/signin" value={1} />
+        )}
+        {!userInfo && (
+          <Tab label="Đăng Ký" component={Link} to="/signup" value={2} />
+        )}
+        {userInfo && (
+          <Tab label="Thông Tin" component={Link} to="/profile" value={3} />
+        )}
+        {userInfo && (
+          <Tab label="Giỏ Hàng" component={Link} to="/cart" value={4} />
+        )}
+      </Tabs>
     </SwipeableDrawer>
   );
 
@@ -530,7 +305,7 @@ export default function Header(props: any) {
       <ElevationScroll {...props}>
         <AppBar position="fixed">
           <Toolbar color="primary" className={classes.toolBar}>
-            <Hidden mdDown>
+            <Hidden smDown>
               <Button
                 component={Link}
                 to="/"
@@ -551,7 +326,15 @@ export default function Header(props: any) {
                 <MenuIcon className={classes.menu} />
               </IconButton>
             </Hidden>
-            <Grid container>{tabs}</Grid>
+            <Grid
+              container
+              justify="flex-end"
+              style={{
+                marginRight: !matchesMD ? theme.spacing(6) : theme.spacing(1),
+              }}
+            >
+              {tabs}
+            </Grid>
           </Toolbar>
           {drawer}
         </AppBar>
@@ -565,4 +348,6 @@ export default function Header(props: any) {
       <div style={{ width: "100%", height: "6em" }} />
     </>
   );
-}
+};
+
+export default Header;
