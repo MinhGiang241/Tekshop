@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import connectDB from "./config/db";
+import path from "path";
 import mongoose from "mongoose";
 import User from "./models/userModels";
 import Product from "./models/productModels";
@@ -33,13 +34,22 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send(`API is running on ${process.env.POST}`);
-});
-
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  const pathFrontend = path.join(__dirname, "..", "..", "frontend/build");
+
+  app.use(express.static(pathFrontend));
+  app.get("*", (req: Request, res: Response, next: NextFunction) => {
+    res.sendFile(path.resolve(pathFrontend, "index.html"));
+  });
+} else {
+  app.get("/", (req: Request, res: Response, next: NextFunction) => {
+    res.send(`API is running on ${process.env.POST}`);
+  });
+}
 
 app.use(notFound);
 

@@ -24,7 +24,7 @@ export const userLoginReducer = (state = {}, action: any) => {
       localStorage.removeItem("cart");
       return {};
     case USER_UPDATE_PROFILE_REQUEST:
-      return { loading: true };
+      return { ...state, loading: true };
     case USER_UPDATE_PROFILE_SUCCESS:
       console.log("action.payload", action.payload);
       return { loading: false, userInfo: action.payload };

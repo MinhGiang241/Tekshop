@@ -168,8 +168,7 @@ const SignIn: React.FC<any> = ({ history, setValue }) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onMouseDown={() => setShowPassword(!showPassword)}
-                    onMouseUp={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowPassword(!showPassword)}
                     edge="end"
                   >
                     {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}

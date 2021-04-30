@@ -55,7 +55,13 @@ const useStyles = makeStyles((theme: IThemeOptions) => ({
   },
 }));
 
-const Profile = ({ match, location, history, children, setValue }: any) => {
+const Profile: React.FC<any> = ({
+  match,
+  location,
+  history,
+  children,
+  setValue,
+}) => {
   const {
     userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
     error,
@@ -78,7 +84,6 @@ const Profile = ({ match, location, history, children, setValue }: any) => {
   const [updatedEmail, setUpdatedEmail] = useState(email);
   const [updatedAvatar, setUpdatedAvatar] = useState("");
   const [updatedPassword, setUpdatedPassword] = useState("");
-  console.log(updatedAvatar, "updatedAvatar");
 
   const resizeFile = (file: any) =>
     new Promise((resolve) => {

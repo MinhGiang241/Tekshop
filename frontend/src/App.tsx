@@ -41,7 +41,7 @@ function App() {
           <Header value={value} setValue={setValue} />
 
           <Route
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/"
             render={(routeProps: RouteComponentProps) => (
               <Home {...routeProps} />
@@ -49,7 +49,7 @@ function App() {
             exact
           />
           <Route
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/product/:id"
             render={(routeProps: RouteComponentProps) => (
               <Product {...routeProps} />
@@ -57,7 +57,7 @@ function App() {
             exact
           />
           <PrivateRoute
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/cart/"
             render={(routeProps: RouteComponentProps) => (
               <Cart {...routeProps} />
@@ -66,7 +66,7 @@ function App() {
           />
 
           <PublicRoute
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/signin"
             render={(routeProps: RouteComponentProps) => (
               <SignIn {...routeProps} setValue={setValue} />
@@ -74,7 +74,7 @@ function App() {
             exact
           />
           <PublicRoute
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/signup"
             render={(routeProps: RouteComponentProps) => (
               <SignUp {...routeProps} setValue={setValue} />
@@ -82,7 +82,7 @@ function App() {
             exact
           />
           <PrivateRoute
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/profile"
             render={(routeProps: RouteComponentProps) => (
               <Profile {...routeProps} setValue={setValue} />
@@ -90,7 +90,7 @@ function App() {
             exact
           />
           <PrivateRoute
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/order/:id"
             render={(routeProps: RouteComponentProps) => (
               <OrderDetails {...routeProps} setValue={setValue} />
@@ -98,7 +98,7 @@ function App() {
             exact
           />
           <PrivateRoute
-            isAuthenticated
+            isAuthenticated={isAuthenticated}
             path="/checkout"
             render={(routeProps: RouteComponentProps) => (
               <Checkout {...routeProps} setValue={setValue} />

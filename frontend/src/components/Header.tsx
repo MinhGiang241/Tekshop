@@ -126,7 +126,7 @@ const Header: React.FC<any> = (props) => {
     userInfo = JSON.parse(localStorage.getItem("userInfo") as string),
   } = userLogin;
 
-  const cart = useSelector((state: any) => state.cart.cartItem) || [];
+  const cart = useSelector((state: any) => state.cart.cartItems) || [];
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -208,8 +208,25 @@ const Header: React.FC<any> = (props) => {
       {userInfo && !matchesSM && (
         <Tab label="Thông Tin" component={Link} to="/profile" value={3} />
       )}
+
       {userInfo && !matchesSM && (
         <Tab label="Giỏ Hàng" component={Link} to="/cart" value={4} />
+      )}
+      {cart.length !== 0 && (
+        <div
+          style={{
+            backgroundColor: "red",
+            fontSize: 14,
+            fontWeight: "bold",
+            textAlign: "center",
+            width: 18,
+            height: 18,
+            borderRadius: "50%",
+            transform: "translate(-20px, 3px)",
+          }}
+        >
+          {cart.length}
+        </div>
       )}
       {userInfo && <Tab label="Đăng xuất" component={Link} to="/" value={5} />}
       {userInfo && (

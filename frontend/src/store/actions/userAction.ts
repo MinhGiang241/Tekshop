@@ -55,7 +55,7 @@ export const updateProfile = (
       { avatar, name, email, password },
       config
     );
-    await localStorage.setItem("userInfo", JSON.stringify(data));
+    localStorage.setItem("userInfo", JSON.stringify(data));
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
   } catch (err) {
     dispatch({

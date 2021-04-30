@@ -11,7 +11,10 @@ frontend/node_modules
 /coverage
 
 # production
-/build
+/frontend/build
+
+# typescript src
+/backend/src
 
 # misc
 .env

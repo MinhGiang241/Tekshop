@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const db_1 = __importDefault(require("./config/db"));
+const path_1 = __importDefault(require("path"));
 const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const orderRoutes_1 = __importDefault(require("./routes/orderRoutes"));
@@ -24,12 +25,21 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.get("/", (req, res, next) => {
-    res.send(`API is running on ${process.env.POST}`);
-});
 app.use("/api/products", productRoutes_1.default);
 app.use("/api/users", userRoutes_1.default);
 app.use("/api/orders", orderRoutes_1.default);
+if (process.env.NODE_ENV === "production") {
+    const pathFrontend = path_1.default.join(__dirname, "..", "..", "frontend/build");
+    app.use(express_1.default.static(pathFrontend));
+    app.get("*", (req, res, next) => {
+        res.sendFile(path_1.default.resolve(pathFrontend, "index.html"));
+    });
+}
+else {
+    app.get("/", (req, res, next) => {
+        res.send(`API is running on ${process.env.POST}`);
+    });
+}
 app.use(errorControllers_1.notFound);
 app.use(((err, req, res, next) => {
     console.log(err);

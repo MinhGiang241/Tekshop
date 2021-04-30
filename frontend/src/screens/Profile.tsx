@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Profile: React.FC<any> = ({ value, setValue }) => {
   const classes = useStyles();
-
   return (
     <Container maxWidth="lg" className={classes.root}>
       <Grid container>
