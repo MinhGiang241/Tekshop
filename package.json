@@ -11,7 +11,8 @@
     "dev": "concurrently \"tsc -w\" \"npm run server\" \"npm run client\"",
     "data:import": "node backend/dist/seeder",
     "data:destroy": "node backend/dist/seeder -d",
-    "data:download": "node backend/dist/data/crawl/index"
+    "data:download": "node backend/dist/data/crawl/index",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
   "repository": {
     "type": "git",
